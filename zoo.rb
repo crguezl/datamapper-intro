@@ -58,6 +58,7 @@ DataMapper.auto_migrate! #
 
 zoo = Zoo.create(:name => 'The Glue Factory', :inception => Time.now)
 
+
 # If the creation was successful, #create will return 
 # the newly created DataMapper::Resource. If it failed, 
 # it will return a new resource that is initialized with 
@@ -68,3 +69,17 @@ zoo = Zoo.create(:name => 'The Glue Factory', :inception => Time.now)
 # return true if the resource was successfully persisted, 
 # or false otherwise.
 
+if zoo.saved? 
+  puts "zoo saved #{zoo.inspect}"
+else
+  puts "zoo NOT saved #{zoo.inspect}"
+end
+
+# If we want to either find the first resource matching some 
+# given criteria or just create that resource if it can't be 
+# found, we can use #first_or_create.
+
+zoo = Zoo.first_or_create(:name => 'The Glue Factory')
+
+puts "zoo.saved? = #{zoo.saved?}"
+puts "zoo = #{zoo.inspect}"
