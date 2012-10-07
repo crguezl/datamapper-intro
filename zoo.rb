@@ -127,3 +127,138 @@ zoo = Zoo.first_or_create({ :name => 'The Chocolat Factory' }, {
 puts "zoo.saved? = #{zoo.saved?}"
 puts "zoo = #{zoo.inspect}"
 
+# We can also create a new instance of the model, update its 
+# properties and then save it to the data store. 
+# The call to #save will return true if saving succeeds, 
+# or false in case something went wrong.
+
+zoo = Zoo.new
+zoo.attributes = { :name => 'The Paper Factory', :inception => Time.now }
+zoo.save
+
+puts "zoo.saved? = #{zoo.saved?}"
+puts "zoo = #{zoo.inspect}"
+
+# In this example we've updated the attributes using the 
+# #attributes= method, but there are multiple ways of setting the 
+# values of a model's properties.
+
+zoo = Zoo.new(:name => 'Awesome Town Zoo')                  # Pass in a hash to the new method
+zoo.attributes = { :name => 'No Fun Zoo', :open => false }  # Set multiple properties at once
+zoo.name = 'Dodgy Town Zoo'                                 # Set individual property
+zoo.save
+
+puts "zoo.saved? = #{zoo.saved?}"
+puts "zoo = #{zoo.inspect}"
+
+# Just like #create has an accompanying #first_or_create method, 
+# #new has its #first_or_new counterpart as well. The only 
+# difference with #first_or_new is that it returns a new unsaved 
+# resource in case it couldn't find one for the given query criteria. 
+# Apart from that, #first_or_new behaves just like #first_or_create 
+# and accepts the same parameters. 
+
+# It is important to note that #save will save the complete loaded 
+# object graph when called. This means that calling #save on a 
+# resource that has relationships of any kind (established via 
+# belongs_to or has) will also save those related resources, if 
+# they are loaded at the time #save is being called. Related 
+# resources are loaded if they've been accessed either for read 
+# or for write purposes, prior to #save being called.
+
+# Update
+# We can also update a model's properties and save it with 
+# one method call. #update will return true if the record 
+# saves and false if the save fails, exactly like the #save method.
+
+zoo.update(:name => 'Funky Town Municipal Zoo')
+
+
+puts "zoo.saved? = #{zoo.saved?}"
+puts "zoo = #{zoo.inspect}"
+
+# One thing to note is that the #update method refuses to update 
+# a resource in case the resource itself is #dirty? at this time.
+
+zoo.name = 'Brooklyn Zoo' # makes it dirty?
+puts "zoo.dirty? = #{zoo.dirty?}"
+begin
+  zoo.update(:name => 'Funky Town Municipal Zoo')
+  # => DataMapper::UpdateConflictError: Zoo#update cannot be called 
+  #    on a dirty resource
+rescue
+  puts "Error while updating zoo: #$!"
+end
+
+# We can also use #update to do mass updates on a model. 
+# In the previous examples we've used 
+#             DataMapper::Resource#update 
+# to update a single resource. We can also use 
+#             DataMapper::Model#update 
+# which is available as a class method on our models. 
+# Calling it will update all instances of the model 
+# with the same values.
+
+Zoo.update(:name => 'Funky Town Municipal Zoo')
+
+# Now the database has something like:
+# sqlite> select * from zoos;
+# 1|Funky Town Municipal Zoo||2012-10-07T12:44:50+01:00|f
+# 2|Funky Town Municipal Zoo||2012-10-07T12:44:50+01:00|f
+# 3|Funky Town Municipal Zoo||2012-10-07T12:44:50+01:00|f
+# 4|Funky Town Municipal Zoo|||f
+
+# This sets all Zoo instances' name property to 
+# 'Funky Town Municipal Zoo'. Internally it does 
+# the equivalent of:
+#       Zoo.all.update(:name => 'Funky Town Municipal Zoo')
+
+Zoo.all.each do |r|
+  puts r.inspect
+end
+
+# This shows that actually, #update is also available on 
+# any DataMapper::Collection and performs a mass update on 
+# that collection when being called. You typically retrieve 
+# a DataMapper::Collection from either a call to SomeModel.all 
+# or a call to a relationship accessor for any 1:n or m:n relationship.
+
+# Destroy
+# To destroy a record, we simply call its #destroy method. 
+# It will return true or false depending if the record is 
+# successfully deleted or not. 
+# Here is an example of finding an existing record 
+# then destroying it:
+
+zoo = Zoo.get(2)
+
+puts "Destroying #{zoo.inspect}"
+b = zoo.destroy
+puts "Destroyed" if b
+
+# We can also use #destroy to do mass deletes on a model. 
+# In the previous examples we've used DataMapper::Resource#destroy 
+# to destroy a single resource. 
+# We can also use DataMapper::Model#destroy which is available 
+# as a class method on our models. Calling it will remove all 
+# instances of that model from the repository.
+
+puts "Destroying all!"
+Zoo.destroy
+
+zoos = Zoo.all
+puts "zoos.length = #{zoos.length}"
+
+# This deleted all Zoo instances from the repository. 
+# Internally it does the equivalent of:
+#                 Zoo.all.destroy
+# This shows that actually, #destroy is also available on 
+# any DataMapper::Collection and performs a mass delete on 
+# that collection when being called. You typically retrieve 
+# a DataMapper::Collection from either a call to SomeModel.all 
+# or a call to a relationship accessor for any 1:n or 
+# m:n relationship.
+
+
+
+
