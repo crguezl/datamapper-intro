@@ -259,6 +259,30 @@ puts "zoos.length = #{zoos.length}"
 # or a call to a relationship accessor for any 1:n or 
 # m:n relationship.
 
+# Talking to your datastore directly
+#
+# Sometimes you may find that you need to execute a non-query 
+# task directly against your database. For example, performing 
+# bulk inserts might be such a situation.
+#
+# The following snippet shows how to insert multiple records 
+# with only one statement on MySQL. It may not work with other 
+# databases but it should give you an idea of how to execute 
+# non-query statements against your own database of choice.
 
+adapter = DataMapper.repository(:default).adapter
+# Insert multiple records with one statement (MySQL)
+#adapter.execute("INSERT INTO zoos (id, name) VALUES (1, 'Lion'), (2, 'Elephant')")
+adapter.execute("INSERT INTO zoos (id, name) VALUES (1, 'Lion');")
+adapter.execute("INSERT INTO zoos (id, name) VALUES (2, 'Elephant')")
+# The interpolated array condition syntax works as well:
+# adapter.execute('INSERT INTO zoos (id, name) VALUES (?, ?), (?, ?)', 1, 'Lion', 2, 'Elephant')
 
+# sqlite> INSERT INTO zoos (description, name) VALUES('fierce', 'Lion'), ('big', 'Elephant');
+# Error: near ",": syntax error
+# sqlite> INSERT INTO zoos (description, name) VALUES('fierce', 'Lion');
+# sqlite> select * from zoos;
+# 5|Lion|fierce||f
+# sqlite> INSERT INTO zoos (description, name) VALUES ('big', 'Elephant');
+# sqlite> 
 
