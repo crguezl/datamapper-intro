@@ -1,4 +1,8 @@
 DataMapper tutorials
 
-- Example zoo.rb  corresponds to the tutorial at http://datamapper.org/docs/create_and_destroy.html
+- Example create_save_update_and_destroy.rb  corresponds to the 
+  tutorial at http://datamapper.org/docs/create_and_destroy.html
+
+- File associations.rb corresponds to tutorial 
+  http://datamapper.org/docs/associations.html
 
