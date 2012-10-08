@@ -286,3 +286,6 @@ adapter.execute("INSERT INTO zoos (id, name) VALUES (2, 'Elephant')")
 # sqlite> INSERT INTO zoos (description, name) VALUES ('big', 'Elephant');
 # sqlite> 
 
+# How to isnert several values in one row in sqlite:
+# insert into zoos ('id', 'name') select 3, 'dog' union all select 4, 'cat';)
+# insert into zoos ('id', 'name') select 6, 'rabbit' union all select 7, 'pig' union all select 8,'horse';)
